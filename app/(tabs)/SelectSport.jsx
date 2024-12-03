@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import RNPickerSelect from 'react-native-picker-select';
 
 const SelectSport = () => {
   const [selectedSport, setSelectedSport] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation();
 
   const handleNavigation = (type) => {
@@ -15,40 +15,68 @@ const SelectSport = () => {
     }
   };
 
+  const openModal = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
+
+  const sports = ['Football', 'Basketball', 'Tennis', 'Cricket'];
+
   return (
     <View style={styles.container}>
       {/* Logo and Heading */}
       <View style={styles.header}>
         <Image
-          source={{ uri: 'https://your-logo-url.com/logo.png' }}
+          source={require('../../assets/images/logo.png')} // Local image
           style={styles.logo}
         />
         <Text style={styles.title}>Volunteer Learning System</Text>
       </View>
 
-      {/* Dropdown to Select Sport */}
+      {/* Button to Open Modal */}
       <Text style={styles.label}>Select the Sport</Text>
-      <RNPickerSelect
-        onValueChange={(value) => setSelectedSport(value)}
-        items={[
-          { label: 'Football', value: 'Football' },
-          { label: 'Basketball', value: 'Basketball' },
-          { label: 'Tennis', value: 'Tennis' },
-          { label: 'Cricket', value: 'Cricket' },
-        ]}
-        placeholder={{ label: 'Choose a sport...', value: null }}
-        style={{
-          inputIOS: styles.picker,
-          inputAndroid: styles.picker,
-        }}
-      />
+      <TouchableOpacity style={styles.button} onPress={openModal}>
+        <Text style={styles.buttonText}>
+          {selectedSport ? selectedSport : 'Choose Sport'}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Modal with Buttons */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Select a Sport</Text>
+            {sports.map((sport) => (
+              <TouchableOpacity
+                key={sport}
+                style={styles.modalButton}
+                onPress={() => {
+                  setSelectedSport(sport);
+                  closeModal();
+                }}
+              >
+                <Text style={styles.modalButtonText}>{sport}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </Modal>
 
       {/* Navigation Buttons */}
-      <TouchableOpacity style={styles.button} onPress={() => handleNavigation('howToPlay')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => handleNavigation('howToPlay')}
+      >
         <Text style={styles.buttonText}>How to Play + Rules</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => handleNavigation('howToAssist')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => handleNavigation('howToAssist')}
+      >
         <Text style={styles.buttonText}>How to Assist</Text>
       </TouchableOpacity>
     </View>
@@ -83,18 +111,6 @@ const styles = StyleSheet.create({
     color: '#19235E',
     marginBottom: 10,
   },
-  picker: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    color: '#000',
-    paddingRight: 30,
-    backgroundColor: '#fff',
-    marginBottom: 20,
-  },
   button: {
     backgroundColor: '#19235E',
     paddingVertical: 15,
@@ -108,6 +124,38 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 20,
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 5,
+    backgroundColor: '#19235E',
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
