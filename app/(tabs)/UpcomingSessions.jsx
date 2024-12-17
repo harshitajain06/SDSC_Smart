@@ -1,4 +1,3 @@
-// src/components/UpcomingSessions.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -13,8 +12,6 @@ import {
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import Modal from 'react-native-modal';
-import RNPickerSelect from 'react-native-picker-select';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import Legend from './Legend'; // Import the Legend component
@@ -102,7 +99,6 @@ const UpcomingSessions = () => {
 
     setIsLoading(true);
     try {
-      // Add a new document with a generated ID
       await addDoc(collection(db, 'sessions'), {
         date: selectedDate,
         sessionType: selectedSessionType,
@@ -177,15 +173,20 @@ const UpcomingSessions = () => {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Select Session Type</Text>
 
-          <RNPickerSelect
-            onValueChange={(value) => handleSessionTypeSelect(value)}
-            items={SESSION_TYPES}
-            placeholder={{ label: 'Select a session type...', value: null }}
-            style={{
-              inputIOS: styles.picker,
-              inputAndroid: styles.picker,
-            }}
-          />
+          {/* Session Type Buttons */}
+          {SESSION_TYPES.map((session) => (
+            <TouchableOpacity
+              key={session.value}
+              style={[
+                styles.sessionTypeButton,
+                selectedSessionType === session.value && styles.sessionTypeButtonSelected,
+                { backgroundColor: SESSION_COLORS[session.value] },
+              ]}
+              onPress={() => handleSessionTypeSelect(session.value)}
+            >
+              <Text style={styles.sessionTypeButtonText}>{session.label}</Text>
+            </TouchableOpacity>
+          ))}
 
           {/* Description Input */}
           {selectedSessionType && (
@@ -229,7 +230,6 @@ const UpcomingSessions = () => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -237,13 +237,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDE4CB',
   },
   headerContainer: {
-    flexDirection: 'row', // Align header elements in a row
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
     marginTop: 50,
   },
   logo: {
-    width: 40, // Adjusted logo size
+    width: 40,
     height: 40,
     resizeMode: 'contain',
   },
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#19235E',
-    marginLeft: 10, // Space between logo and text
+    marginLeft: 10,
   },
   title: {
     fontSize: 24,
@@ -272,17 +272,20 @@ const styles = StyleSheet.create({
     color: '#19235E',
     textAlign: 'center',
   },
-  picker: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
+  sessionTypeButton: {
+    padding: 10,
+    marginVertical: 5,
     borderRadius: 8,
-    color: '#000',
-    paddingRight: 30, // To ensure the text is never behind the icon
-    backgroundColor: '#fff',
-    marginBottom: 20,
+    alignItems: 'center',
+  },
+  sessionTypeButtonSelected: {
+    borderWidth: 2,
+    borderColor: '#19235E',
+  },
+  sessionTypeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   descriptionContainer: {
     marginBottom: 20,
