@@ -15,7 +15,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { auth, usersRef } from '../../config/firebase'; // Import Firebase auth and Firestore reference
+import { auth, usersRef } from '../../config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -24,7 +24,7 @@ const VolunteerRegistration = () => {
   const navigation = useNavigation();
 
   // State for form inputs
-  const [user, loading, error] = useAuthState(auth);
+  const [user] = useAuthState(auth);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +32,7 @@ const VolunteerRegistration = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [nearestMTR, setNearestMTR] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [userType, setUserType] = useState('Volunteer'); // Default user type
+  const [userType, setUserType] = useState('Volunteer');
 
   useEffect(() => {
     if (user) {
@@ -40,19 +40,16 @@ const VolunteerRegistration = () => {
     }
   }, [user]);
 
-  // Date picker change handler
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || startDate;
     setShowDatePicker(Platform.OS === 'ios');
     setStartDate(currentDate);
   };
 
-  // Show date picker
   const showDatepicker = () => {
     setShowDatePicker(true);
   };
 
-  // Fetch location using Expo Location API
   const fetchLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -74,7 +71,6 @@ const VolunteerRegistration = () => {
     }
   };
 
-  // Form submission handler
   const handleSubmit = async () => {
     try {
       if (!name.trim() || !email.trim() || !password.trim() || !nearestMTR.trim()) {
@@ -82,11 +78,9 @@ const VolunteerRegistration = () => {
         return;
       }
 
-      // Create user with Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // User data to store in Firestore
       const userData = {
         uid: user.uid,
         name,
@@ -94,10 +88,9 @@ const VolunteerRegistration = () => {
         location,
         startDate: startDate.toISOString(),
         nearestMTR,
-        userType, // Save user type in Firestore
+        userType,
       };
 
-      // Add user data to Firestore
       await setDoc(doc(usersRef, user.uid), userData);
 
       Alert.alert('Success', 'Registration submitted successfully!');
@@ -119,30 +112,17 @@ const VolunteerRegistration = () => {
 
       <Text style={styles.label}>Select User Type:</Text>
       <View style={styles.userTypeContainer}>
-        <TouchableOpacity
-          style={[styles.userTypeButton, userType === 'Volunteer' && styles.activeButton]}
-          onPress={() => setUserType('Volunteer')}
-        >
-          <Text style={[styles.userTypeText, userType === 'Volunteer' && styles.activeText]}>
-            Volunteer
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.userTypeButton, userType === 'Management' && styles.activeButton]}
-          onPress={() => setUserType('Management')}
-        >
-          <Text style={[styles.userTypeText, userType === 'Management' && styles.activeText]}>
-            Management
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.userTypeButton, userType === 'Athlete' && styles.activeButton]}
-          onPress={() => setUserType('Athlete')}
-        >
-          <Text style={[styles.userTypeText, userType === 'Athlete' && styles.activeText]}>
-            Athlete
-          </Text>
-        </TouchableOpacity>
+        {['Volunteer', 'Management', 'Athlete'].map((type) => (
+          <TouchableOpacity
+            key={type}
+            style={[styles.userTypeButton, userType === type && styles.activeButton]}
+            onPress={() => setUserType(type)}
+          >
+            <Text style={[styles.userTypeText, userType === type && styles.activeText]}>
+              {type}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <TextInput
@@ -230,112 +210,103 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f7f9fc',
+    backgroundColor: '#DDE4CB',
   },
   headerContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: '#ccc',
-    paddingBottom: 10,
+    marginTop: 50,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
-    marginBottom: 10,
   },
   headerText: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#0056b3',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#19235E',
+    marginLeft: 10,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#0056b3',
+    fontSize: 24,
+    fontWeight: '600',
     marginBottom: 15,
+    color: '#19235E',
     textAlign: 'center',
   },
   label: {
     fontSize: 16,
-    fontWeight: '600',
     marginBottom: 10,
+    color: '#19235E',
   },
   userTypeContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginBottom: 20,
   },
   userTypeButton: {
-    flex: 1,
-    marginHorizontal: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderWidth: 1,
-    borderColor: '#0056b3',
-    borderRadius: 8,
-    alignItems: 'center',
+    borderColor: '#19235E',
+    borderRadius: 5,
   },
   activeButton: {
-    backgroundColor: '#0056b3',
+    backgroundColor: '#19235E',
   },
   userTypeText: {
-    fontSize: 14,
-    color: '#0056b3',
-    fontWeight: '500',
+    color: '#19235E',
   },
   activeText: {
-    color: '#fff',
+    color: '#FFF',
   },
   input: {
+    height: 40,
+    borderColor: '#19235E',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 5,
+    paddingHorizontal: 10,
     marginBottom: 15,
-    fontSize: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFF',
   },
   inputWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
     marginBottom: 15,
-    backgroundColor: '#fff',
   },
   inputField: {
     flex: 1,
-    fontSize: 16,
+    height: 40,
+    borderColor: '#19235E',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFF',
   },
   iconContainer: {
     marginLeft: 10,
   },
   submitButton: {
-    backgroundColor: '#0056b3',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: '#19235E',
+    paddingVertical: 10,
+    borderRadius: 5,
     alignItems: 'center',
     marginBottom: 15,
   },
   submitButtonText: {
-    color: '#fff',
+    color: '#FFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
   backButton: {
-    backgroundColor: '#ddd',
-    padding: 15,
-    borderRadius: 8,
+    paddingVertical: 10,
     alignItems: 'center',
   },
   backButtonText: {
-    color: '#0056b3',
+    color: '#19235E',
     fontSize: 16,
-    fontWeight: '600',
   },
 });
 

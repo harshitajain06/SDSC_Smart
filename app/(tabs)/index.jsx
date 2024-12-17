@@ -1,34 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../../config/firebase';
 import { signOut } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { usersRef } from '../../config/firebase';
 
 const RegistrationScreen = () => {
   const navigation = useNavigation();
-  const [user, loading, error] = useAuthState(auth);
-
-  useEffect(() => {
-    const navigateToDashboard = async () => {
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(usersRef, user.uid));
-          if (userDoc.exists()) {
-            const userType = userDoc.data().userType;
-            navigation.replace(`${userType}Dashboard`);
-          }
-        } catch (error) {
-          console.error('Failed to fetch user type:', error);
-        }
-      }
-    };
-
-    navigateToDashboard();
-  }, [user, navigation]);
 
   const handleLogout = async () => {
     try {
