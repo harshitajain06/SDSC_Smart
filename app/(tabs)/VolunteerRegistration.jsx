@@ -32,10 +32,11 @@ const VolunteerRegistration = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [nearestMTR, setNearestMTR] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [userType, setUserType] = useState('Volunteer'); // Default user type
 
   useEffect(() => {
     if (user) {
-      navigation.replace('VolunteerDashboard');
+      navigation.replace(`${userType}Dashboard`);
     }
   }, [user]);
 
@@ -76,6 +77,11 @@ const VolunteerRegistration = () => {
   // Form submission handler
   const handleSubmit = async () => {
     try {
+      if (!name.trim() || !email.trim() || !password.trim() || !nearestMTR.trim()) {
+        Alert.alert('Validation Error', 'Please fill in all fields.');
+        return;
+      }
+
       // Create user with Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -88,13 +94,14 @@ const VolunteerRegistration = () => {
         location,
         startDate: startDate.toISOString(),
         nearestMTR,
+        userType, // Save user type in Firestore
       };
 
       // Add user data to Firestore
       await setDoc(doc(usersRef, user.uid), userData);
-      
+
       Alert.alert('Success', 'Registration submitted successfully!');
-      navigation.navigate('VolunteerDashboard');
+      navigation.navigate(`${userType}Dashboard`);
     } catch (error) {
       Alert.alert('Error', error.message);
       console.log(error);
@@ -108,7 +115,35 @@ const VolunteerRegistration = () => {
         <Text style={styles.headerText}>SCDC SMART</Text>
       </View>
 
-      <Text style={styles.title}>Volunteering Registration Credentials</Text>
+      <Text style={styles.title}>Volunteer Registration</Text>
+
+      <Text style={styles.label}>Select User Type:</Text>
+      <View style={styles.userTypeContainer}>
+        <TouchableOpacity
+          style={[styles.userTypeButton, userType === 'Volunteer' && styles.activeButton]}
+          onPress={() => setUserType('Volunteer')}
+        >
+          <Text style={[styles.userTypeText, userType === 'Volunteer' && styles.activeText]}>
+            Volunteer
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.userTypeButton, userType === 'Management' && styles.activeButton]}
+          onPress={() => setUserType('Management')}
+        >
+          <Text style={[styles.userTypeText, userType === 'Management' && styles.activeText]}>
+            Management
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.userTypeButton, userType === 'Athlete' && styles.activeButton]}
+          onPress={() => setUserType('Athlete')}
+        >
+          <Text style={[styles.userTypeText, userType === 'Athlete' && styles.activeText]}>
+            Athlete
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <TextInput
         style={styles.input}
@@ -191,71 +226,100 @@ const VolunteerRegistration = () => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#DDE4CB',
+    backgroundColor: '#f7f9fc',
   },
   headerContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    marginTop: 50,
+    borderBottomWidth: 2,
+    borderBottomColor: '#ccc',
+    paddingBottom: 10,
   },
   logo: {
-    width: 40,
-    height: 40,
+    width: 80,
+    height: 80,
     resizeMode: 'contain',
+    marginBottom: 10,
   },
   headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#19235E',
-    marginLeft: 10,
-  },
-  title: {
     fontSize: 24,
     fontWeight: '600',
+    color: '#0056b3',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#0056b3',
     marginBottom: 15,
-    color: '#19235E',
     textAlign: 'center',
   },
-  input: {
-    height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  userTypeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  userTypeButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    paddingVertical: 12,
     paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#0056b3',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  activeButton: {
+    backgroundColor: '#0056b3',
+  },
+  userTypeText: {
+    fontSize: 14,
+    color: '#0056b3',
+    fontWeight: '500',
+  },
+  activeText: {
+    color: '#fff',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
     marginBottom: 15,
-    color: '#000',
+    fontSize: 16,
     backgroundColor: '#fff',
   },
   inputWithIcon: {
-    position: 'relative', // Ensures icon can be positioned inside the input
-    marginBottom: 15,
-  },
-  inputField: {
-    height: 50,
-    borderColor: '#ddd',
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingRight: 40, // Adds space for the icon
-    color: '#000',
+    padding: 12,
+    marginBottom: 15,
     backgroundColor: '#fff',
   },
+  inputField: {
+    flex: 1,
+    fontSize: 16,
+  },
   iconContainer: {
-    position: 'absolute',
-    right: 10, // Position icon to the right inside the input field
-    top: 12, // Vertically center the icon
+    marginLeft: 10,
   },
   submitButton: {
-    backgroundColor: '#19235E',
-    paddingVertical: 15,
+    backgroundColor: '#0056b3',
+    padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+    marginBottom: 15,
   },
   submitButtonText: {
     color: '#fff',
@@ -263,11 +327,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   backButton: {
-    marginTop: 10,
+    backgroundColor: '#ddd',
+    padding: 15,
+    borderRadius: 8,
     alignItems: 'center',
   },
   backButtonText: {
-    color: '#19235E',
+    color: '#0056b3',
     fontSize: 16,
     fontWeight: '600',
   },

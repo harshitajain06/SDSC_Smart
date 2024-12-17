@@ -1,10 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { auth } from '../../config/firebase';
+import { signOut } from 'firebase/auth';
 
 const RegistrationScreen = () => {
   const navigation = useNavigation();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      Alert.alert('Logged Out', 'You have been logged out successfully.');
+      navigation.replace('index');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+      console.error(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -36,6 +49,11 @@ const RegistrationScreen = () => {
         <Icon name="account-group" size={24} color="#19235E" style={styles.icon} />
       </TouchableOpacity>
 
+      {/* Sign in as a different user */}
+      <TouchableOpacity onPress={handleLogout} style={styles.differentUserContainer}>
+        <Text style={styles.differentUserText}>Sign up as a different user</Text>
+      </TouchableOpacity>
+
       {/* Already have an account text */}
       <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.loginContainer}>
         <Text style={styles.loginText}>ALREADY HAVE AN ACCOUNT? </Text>
@@ -60,17 +78,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDE4CB',
   },
   headerContainer: {
-    flexDirection: 'row', // Align items in a row
-    alignItems: 'center', // Vertically center items
+    flexDirection: 'row',
+    alignItems: 'center',
     position: 'absolute',
     top: 20,
     left: 20,
     marginTop: 50,
   },
   logo: {
-    width: 40, // Adjust size according to your logo
+    width: 40,
     height: 40,
-    marginRight: 10, // Adds space between logo and text
+    marginRight: 10,
     resizeMode: 'contain',
   },
   headerText: {
@@ -112,6 +130,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  differentUserContainer: {
+    marginTop: 20,
+  },
+  differentUserText: {
+    color: '#19235E',
+    fontSize: 16,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
   loginContainer: {
     flexDirection: 'row',
     marginTop: 20,
@@ -131,7 +158,7 @@ const styles = StyleSheet.create({
     width: '80%',
     marginTop: 30,
     marginBottom: -60,
-    marginRight: 50
+    marginRight: 50,
   },
   image: {
     width: 120,

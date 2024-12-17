@@ -10,7 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { auth, usersRef } from '../../config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -27,6 +26,7 @@ const ManagementRegistration = () => {
   const [password, setPassword] = useState('');
   const [sdscteam, setSdscteam] = useState('');
   const [nearestMTR, setNearestMTR] = useState('');
+  const [userType, setUserType] = useState('Management'); // Default user type
 
   useEffect(() => {
     if (user) {
@@ -37,7 +37,6 @@ const ManagementRegistration = () => {
   // Form submission handler
   const handleSubmit = async () => {
     try {
-      // Input Validation (Optional but recommended)
       if (!name.trim() || !email.trim() || !password.trim() || !sdscteam.trim() || !nearestMTR.trim()) {
         Alert.alert('Validation Error', 'Please fill in all fields.');
         return;
@@ -54,13 +53,14 @@ const ManagementRegistration = () => {
         email,
         sdscteam,
         nearestMTR,
+        userType, // Save user type in Firestore
       };
 
       // Add user data to Firestore
       await setDoc(doc(usersRef, user.uid), userData);
 
       Alert.alert('Success', 'Registration submitted successfully!');
-      navigation.navigate('ManagementDashboard'); // Navigate back or to another screen
+      navigation.navigate(`${userType}Dashboard`);
     } catch (error) {
       Alert.alert('Error', error.message);
       console.log(error);
@@ -69,26 +69,49 @@ const ManagementRegistration = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
       <View style={styles.headerContainer}>
         <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
         <Text style={styles.headerText}>SCDC SMART</Text>
       </View>
 
-      {/* Title */}
       <Text style={styles.title}>Management Registration</Text>
 
-      {/* Name Input */}
+      <Text style={styles.label}>Select User Type:</Text>
+      <View style={styles.userTypeContainer}>
+        <TouchableOpacity
+          style={[styles.userTypeButton, userType === 'Volunteer' && styles.activeButton]}
+          onPress={() => setUserType('Volunteer')}
+        >
+          <Text style={[styles.userTypeText, userType === 'Volunteer' && styles.activeText]}>
+            Volunteer
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.userTypeButton, userType === 'Management' && styles.activeButton]}
+          onPress={() => setUserType('Management')}
+        >
+          <Text style={[styles.userTypeText, userType === 'Management' && styles.activeText]}>
+            Management
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.userTypeButton, userType === 'Athlete' && styles.activeButton]}
+          onPress={() => setUserType('Athlete')}
+        >
+          <Text style={[styles.userTypeText, userType === 'Athlete' && styles.activeText]}>
+            Athlete
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <TextInput
         style={styles.input}
         placeholder="Name"
         placeholderTextColor="#888"
         value={name}
         onChangeText={setName}
-        accessibilityLabel="Name Input"
       />
 
-      {/* Email Address Input */}
       <TextInput
         style={styles.input}
         placeholder="Email Address"
@@ -96,57 +119,38 @@ const ManagementRegistration = () => {
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
-        accessibilityLabel="Email Address Input"
       />
 
-      {/* Password Input */}
       <TextInput
         style={styles.input}
         placeholder="Password"
         placeholderTextColor="#888"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry // Secure password input
-        accessibilityLabel="Password Input"
+        secureTextEntry
       />
 
-      {/* SDSC Team Input with Icon */}
-      <View style={styles.inputWithIcon}>
-        <TextInput
-          style={styles.inputField}
-          placeholder="SDSC Team"
-          placeholderTextColor="#888"
-          value={sdscteam}
-          onChangeText={setSdscteam}
-          accessibilityLabel="SDSC Team Input"
-        />
-        <TouchableOpacity style={styles.iconContainer} accessible={false}>
-          <Ionicons name="people-outline" size={24} color="#19235E" />
-        </TouchableOpacity>
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="SDSC Team"
+        placeholderTextColor="#888"
+        value={sdscteam}
+        onChangeText={setSdscteam}
+      />
 
-      {/* Nearest MTR Station Input with Icon */}
-      <View style={styles.inputWithIcon}>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Nearest MTR Station"
-          placeholderTextColor="#888"
-          value={nearestMTR}
-          onChangeText={setNearestMTR}
-          accessibilityLabel="Nearest MTR Station Input"
-        />
-        <TouchableOpacity style={styles.iconContainer} accessible={false}>
-          <Ionicons name="train-outline" size={24} color="#19235E" />
-        </TouchableOpacity>
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Nearest MTR Station"
+        placeholderTextColor="#888"
+        value={nearestMTR}
+        onChangeText={setNearestMTR}
+      />
 
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} accessibilityLabel="Submit Button">
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
 
-      {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()} accessibilityLabel="Back Button">
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -158,16 +162,16 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#DDE4CB', // Background color
+    backgroundColor: '#DDE4CB',
   },
   headerContainer: {
-    flexDirection: 'row', // Align header elements in a row
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
     marginTop: 50,
   },
   logo: {
-    width: 40, // Adjusted logo size
+    width: 40,
     height: 40,
     resizeMode: 'contain',
   },
@@ -175,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#19235E',
-    marginLeft: 10, // Space between logo and text
+    marginLeft: 10,
   },
   title: {
     fontSize: 24,
@@ -184,6 +188,33 @@ const styles = StyleSheet.create({
     color: '#19235E',
     textAlign: 'center',
   },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#19235E',
+  },
+  userTypeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  userTypeButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#19235E',
+    borderRadius: 8,
+  },
+  activeButton: {
+    backgroundColor: '#19235E',
+  },
+  userTypeText: {
+    color: '#19235E',
+    fontWeight: '600',
+  },
+  activeText: {
+    color: '#fff',
+  },
   input: {
     height: 50,
     borderColor: '#ddd',
@@ -191,36 +222,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 15,
-    color: '#000',
     backgroundColor: '#fff',
-    fontSize: 16,
-  },
-  inputWithIcon: {
-    position: 'relative', // To position the icon inside the input
-    marginBottom: 15,
-  },
-  inputField: {
-    height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingRight: 40, // Space for the icon
-    color: '#000',
-    backgroundColor: '#fff',
-    fontSize: 16,
-  },
-  iconContainer: {
-    position: 'absolute',
-    right: 10, // Position icon to the right inside the input field
-    top: 13, // Vertically center the icon
   },
   submitButton: {
     backgroundColor: '#19235E',
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 10,
   },
   submitButtonText: {
     color: '#fff',
