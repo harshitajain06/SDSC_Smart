@@ -1,6 +1,33 @@
-# Welcome to your Expo app 👋
+# SDSC Sports Coordination App 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An All-in-One Platform for SDSC Sports Activities
+This mobile application is designed to streamline sports event coordination under the Singapore Disability Sports Council (SDSC). It allows PWD athletes and volunteers to efficiently register, schedule, and participate in sports events like Boccia.
+
+## Features
+
+### Core Functionalities
+
+- 📅 **Centralized Event Scheduling**: Manage and update game schedules effortlessly.
+- 📍**Venue & Time Display**: View real-time updates on event locations and timings.
+- 📝 **Easy Volunteer & Athlete Registration**: Sign up for events with a single tap.
+- 🔔 **Real-Time Notifications**: Get instant updates on changes, reminders, and new events.
+- 📊 **Participation Tracking**: Keep track of attendance and engagement metrics.
+
+### Additional Features
+
+- 🧑‍🤝‍🧑 Volunteer Coordination: Match volunteers with events needing assistance.
+- 🚍 Transportation Assistance (Future Update): Enable volunteers to coordinate transport for PWD athletes.
+- 📢 Event Announcements: Stay informed about upcoming sports activities and tournaments.
+- ♿ Accessibility-Focused Design: Ensuring ease of use for all users, including PWD athletes.
+
+
+
+
+## App Demo Video
+
+Watch a demo of Mindfulness in action:
+
+[![Watch the demo]](https://github.com/harshitajain06/SDSC_Smart_App/blob/master/assets/videos/SDSCVideo1.mp4)
 
 ## Get started
 
