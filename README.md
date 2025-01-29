@@ -27,7 +27,10 @@ This mobile application is designed to streamline sports event coordination unde
 
 Watch a demo of Mindfulness in action:
 
-[![Watch the demo]](https://github.com/harshitajain06/SDSC_Smart_App/blob/master/assets/videos/SDSCVideo1.mp4)
+- [![Watch the demo]](https://github.com/harshitajain06/SDSC_Smart_App/blob/master/assets/videos/SDSCVideo1.mp4)
+- [![Watch the demo]](https://github.com/harshitajain06/SDSC_Smart_App/blob/master/assets/videos/SDSCVideo2.mp4)
+- [![Watch the demo]](https://github.com/harshitajain06/SDSC_Smart_App/blob/master/assets/videos/SDSCVideo3.mp4)
+
 
 ## Get started
 
