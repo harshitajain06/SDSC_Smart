@@ -1,6 +1,6 @@
 # SDSC Sports Coordination App 👋
 
-An All-in-One Platform for SDSC Sports Activities
+A Platform for SDSC(Singapore Disability Sports Council) Sports Activities.
 This mobile application is designed to streamline sports event coordination under the Singapore Disability Sports Council (SDSC). It allows PWD athletes and volunteers to efficiently register, schedule, and participate in sports events like Boccia.
 
 ## Features
